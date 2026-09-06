@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import ComingSoon from "./ComingSoon";
 import studioDramatic from "@/assets/podchat/studio-dramatic.jpg";
 import studioTable from "@/assets/podchat/studio-table.jpg";
 import studioBlue from "@/assets/podchat/studio-blue.jpg";
@@ -554,7 +555,8 @@ function GPanel({title,color,onMore,children}){
 }
 
 // ─── LIVE ─────────────────────────────────────────────────────────────────────
-function LiveScreen({content}){
+function LiveScreen({content,onNavigate}){
+  const [soon,setSoon]=useState(null);
   const [sel,setSel]=useState(null);
   const [log,setLog]=useState([
     {u:"Nova_T",m:"This is insane 🔥🔥",c:T.cyan},{u:"PodFan99",m:"Marcus is hilarious",c:T.pink},{u:"TechGuru",m:"Spitting facts right now",c:T.purple},
@@ -565,6 +567,7 @@ function LiveScreen({content}){
   if(sel){
     const s=content.highlights.find(x=>x.id===sel)||content.highlights[0];
     return <div>
+      <ComingSoon topic={soon} onClose={()=>setSoon(null)} onNavigate={onNavigate} T={T}/>
       <Btn small onClick={()=>setSel(null)}>← All Live</Btn>
       <div style={{marginTop:18,display:"grid",gridTemplateColumns:"1fr 320px",gap:20}}>
         <div>
@@ -582,9 +585,9 @@ function LiveScreen({content}){
             </div>
           </div>
           <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
-            <Btn color={s.color||T.cyan} filled>🎤 Hot Seat</Btn>
-            <Btn color={T.gold}>◆ Send Tip</Btn>
-            <Btn color={T.purple}>✂ Clip</Btn>
+            <Btn color={s.color||T.cyan} filled onClick={()=>setSoon("hotseat")}>🎤 Hot Seat</Btn>
+            <Btn color={T.gold} onClick={()=>setSoon("wallet")}>◆ Send Tip</Btn>
+            <Btn color={T.purple} onClick={()=>setSoon("ai")}>✂ Clip</Btn>
             <Btn color={T.t2}>↗ Share</Btn>
           </div>
         </div>
@@ -3821,7 +3824,7 @@ export default function PodChat(){
 
   const SCREENS={
     home:       <HomeScreen content={content} setPage={setPage}/>,
-    live:       <LiveScreen content={content}/>,
+    live:       <LiveScreen content={content} onNavigate={setPage}/>,
     trending:   <TrendingScreen content={content}/>,
     hustle:     <HustleScreen content={content}/>,
     podcasts:   <PodcastsScreen content={content}/>,
