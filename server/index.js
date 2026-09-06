@@ -125,7 +125,6 @@ app.use(express.json({ limit: '1mb' }))
 
 const origin = process.env.FRONTEND_ORIGIN
 const origins = origin ? origin.split(',').map(s => s.trim()) : null
-const origins = origin ? origin.split(',').map(s => s.trim()) : null
 app.use(cors({ origin: origins || true, credentials: true }))
 
 app.use('/api/', rateLimit({ windowMs: 15 * 60 * 1000, limit: 300 }))
