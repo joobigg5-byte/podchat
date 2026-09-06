@@ -1,0 +1,22 @@
+services:
+  api:
+    build: .
+    restart: unless-stopped
+    environment:
+      PORT: 4100
+      DATA_DIR: /data
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+    volumes:
+      - podchat_data:/data
+    networks:
+      - web
+
+volumes:
+  podchat_data:
+
+networks:
+  web:
+    external: true
+    name: passage_default
