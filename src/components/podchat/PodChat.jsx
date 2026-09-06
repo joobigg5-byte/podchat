@@ -305,6 +305,7 @@ function ImgFallback({src,alt,style={},fallback=T.purple}){
 // ─── SUPPORT ────────────────────────────────────────────────────────────────
 const SUPPORT_URL="https://wittyhub.co?app=podchats&v=1.0";
 const openSupport=()=>{ try{ window.open(SUPPORT_URL,"_blank","noopener"); }catch(e){} };
+const API_BASE = import.meta.env.VITE_API_BASE || "https://podchat.wittyhub.co";
 
 // ─── NAV ─────────────────────────────────────────────────────────────────────
 const NAV=[
@@ -1753,7 +1754,7 @@ function AIStudioScreen({shows=[]}){
           <div style={{fontSize:20,fontWeight:900,color:T.t1,letterSpacing:-0.5}}>AI Studio</div>
           <div style={{fontSize:12,color:T.t2,marginTop:4}}>Describe an episode — the AI produces scroll-stopping clips, titles, chapters and social posts in seconds.</div>
         </div>
-        <Chip label="Powered by Lovable AI" color={T.cyan}/>
+        <Chip label="AI Studio" color={T.cyan}/>
       </StudioPanel>
 
       {/* Source picker */}
@@ -2985,12 +2986,7 @@ function OwnershipScreen(){
 
 // Staff access keys — entered as the password on the normal Sign In form.
 // There is no visible "Admin" option anywhere in the product for general users.
-const ADMIN_ACCESS_KEYS=[
-  "PC-STUDIO-KXH4-ZEIW",
-  "PC-BROADCAST-ZNRF-5EZ7",
-  "PC-CONTROL-ML2A-S2GE",
-  "PC-SIGNAL-DTM8-9AIX",
-];
+
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // LOGIN / SIGNUP SCREEN
@@ -3001,19 +2997,33 @@ function AuthScreen({onAuth}){
   const [err,setErr]=useState("");
   const [loading,setLoading]=useState(false);
 
-  const submit=()=>{
+  const submit=async()=>{
     setErr("");
     if(!form.email.includes("@")){setErr("Please enter a valid email address");return;}
-    if(form.password.length<6){setErr("Password must be at least 6 characters");return;}
+    if(form.password.length<8){setErr("Password must be at least 8 characters");return;}
     if(mode==="signup"&&!form.name.trim()){setErr("Please enter your name");return;}
     setLoading(true);
-    // Admin access is never offered in the UI. It is unlocked only when a valid
-    // staff access key is entered as the password on the Sign In form.
-    const isStaffKey = mode==="login" && ADMIN_ACCESS_KEYS.includes(form.password.trim());
-    setTimeout(()=>{
+    try{
+      const res=await fetch(`${API_BASE}/api/auth/${mode==="signup"?"signup":"login"}`,{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify(
+          mode==="signup"
+            ? {email:form.email,password:form.password,name:form.name,type:form.type==="creator"?"creator":"listener"}
+            : {email:form.email,password:form.password}
+        ),
+      });
+      const data=await res.json();
+      if(!res.ok) throw new Error(data.error||"Could not sign you in.");
+      // The server decides who is an admin. Nothing about admin access
+      // exists in this bundle any more.
+      localStorage.setItem("podchat_token",data.token);
+      onAuth({...data.user,token:data.token});
+    }catch(e){
+      setErr(e.message||"Network error. Please try again.");
+    }finally{
       setLoading(false);
-      onAuth({...form,type:isStaffKey?"admin":form.type,id:`user_${Date.now()}`});
-    },1200);
+    }
   };
 
   return(
