@@ -102,17 +102,17 @@ const IMG_MIC_CONDENSER = micCondenser;
 const DEFAULT_CONTENT = {
   brand:{ name:"PodChat", tagline:"Where Every Voice Is a Show", logoUrl:"", accentColor:"#7FA6F0" },
   highlights:[
-    { id:"h1", title:"The AI Comedy Takeover",    host:"Marcus Bright × Dr. Amara Osei", description:"Two worlds collide — stand-up comedy meets artificial intelligence in the most explosive live debate of 2026.", category:"Comedy · Live Debate", imgUrl:IMG_STUDIO_DRAMATIC, badge:"🔴 LIVE NOW", color:"#D2687A", cta:"Watch Free",  views:"92.1K watching" },
-    { id:"h2", title:"Open Mic: Lagos Night",      host:"5 Comedians · Eko Stage",        description:"Africa's biggest open mic returns. Five comedians, one stage, zero script. The crowd decides who stays.", category:"Stand-Up · Open Mic",    imgUrl:IMG_COMEDY_NIGHT, badge:"🔥 TRENDING",  color:"#9FB6DC", cta:"Watch Now",  views:"67.4K views" },
-    { id:"h3", title:"Wall Street Unfiltered",     host:"Zara Kimani",                    description:"The finance podcast that Wall Street doesn't want you to hear. Raw market truth every Tuesday.",              category:"Finance · Podcast",      imgUrl:IMG_STUDIO_BLUE, badge:"⭐ TOP SHOW",  color:"#7FA6F0", cta:"Listen Now", views:"31.7K listeners" },
+    { id:"h1", title:"The AI Comedy Takeover",    host:"Marcus Bright � Dr. Elena Vance", description:"Two worlds collide — stand-up comedy meets artificial intelligence in the most explosive live debate of 2026.", category:"Comedy · Live Debate", imgUrl:IMG_STUDIO_DRAMATIC, badge:"🔴 LIVE NOW", color:"#D2687A", cta:"Watch Free",  views:"92.1K watching" },
+    { id:"h2", title:"Open Mic: Midnight Sessions",      host:"5 Comedians � The Vault",        description:"The biggest open mic night returns. Five comedians, one stage, zero script. The crowd decides who stays.", category:"Stand-Up · Open Mic",    imgUrl:IMG_COMEDY_NIGHT, badge:"🔥 TRENDING",  color:"#9FB6DC", cta:"Watch Now",  views:"67.4K views" },
+    { id:"h3", title:"Wall Street Unfiltered",     host:"Zara Lindqvist",                    description:"The finance podcast that Wall Street doesn't want you to hear. Raw market truth every Tuesday.",              category:"Finance · Podcast",      imgUrl:IMG_STUDIO_BLUE, badge:"⭐ TOP SHOW",  color:"#7FA6F0", cta:"Listen Now", views:"31.7K listeners" },
     { id:"h4", title:"Pod Wars: Tech vs Humanity", host:"Various Hosts",                   description:"The most controversial debate format on the internet. Audience votes decide the winner live.",               category:"Debate · Live",          imgUrl:IMG_LIVE_CROWD, badge:"⚔️ POD WARS", color:"#8FA8DE", cta:"Join Live",  views:"55.9K live" },
   ],
   shows:[
-    { id:"s1", title:"Future Forward",    host:"Erika Nwosu",     category:"Tech",     subscribers:"1.2M", episodes:148, imgUrl:IMG_MIC_NEON, color:"#7FA6F0", description:"Weekly deep dives into emerging technology and the future of human civilization." },
-    { id:"s2", title:"Money Moves",       host:"James Okafor",    category:"Finance",  subscribers:"3.4M", episodes:210, imgUrl:IMG_MIC_GOLD_SILVER, color:"#7FA6F0", description:"Practical financial advice for the next generation of wealth builders." },
-    { id:"s3", title:"Mind Matters",      host:"Dr. Sofia Reyes", category:"Health",   subscribers:"980K", episodes:89,  imgUrl:IMG_STUDIO_LETS_TALK, color:"#5A78C8", description:"Science-backed mental health conversations that actually help." },
+    { id:"s1", title:"Future Forward",    host:"Erika Lindholm",     category:"Tech",     subscribers:"1.2M", episodes:148, imgUrl:IMG_MIC_NEON, color:"#7FA6F0", description:"Weekly deep dives into emerging technology and the future of human civilization." },
+    { id:"s2", title:"Money Moves",       host:"James Whitaker",    category:"Finance",  subscribers:"3.4M", episodes:210, imgUrl:IMG_MIC_GOLD_SILVER, color:"#7FA6F0", description:"Practical financial advice for the next generation of wealth builders." },
+    { id:"s3", title:"Mind Matters",      host:"Dr. Sofia Marchetti", category:"Health",   subscribers:"980K", episodes:89,  imgUrl:IMG_STUDIO_LETS_TALK, color:"#5A78C8", description:"Science-backed mental health conversations that actually help." },
     { id:"s4", title:"Culture Crash",     host:"The Crew",        category:"Culture",  subscribers:"2.1M", episodes:305, imgUrl:IMG_LIVE_CROWD, color:"#8FA8DE", description:"Where pop culture, politics and real life crash into each other." },
-    { id:"s5", title:"Startup Grind",     host:"Kwame Asante",    category:"Business", subscribers:"1.8M", episodes:167, imgUrl:IMG_STUDIO_TABLE, color:"#9FB6DC", description:"From idea to exit — the unfiltered founder journey." },
+    { id:"s5", title:"Startup Grind",     host:"Callum Reyes",    category:"Business", subscribers:"1.8M", episodes:167, imgUrl:IMG_STUDIO_TABLE, color:"#9FB6DC", description:"From idea to exit — the unfiltered founder journey." },
     { id:"s6", title:"The History Files", host:"Prof. Lin Wei",   category:"History",  subscribers:"4.1M", episodes:421, imgUrl:IMG_MIC_RED, color:"#D2687A", description:"The stories history class never taught you, told the way they actually happened." },
   ],
   comedy:[
@@ -124,10 +124,10 @@ const DEFAULT_CONTENT = {
     { id:"c6", name:"Late Night Unfiltered",  specialty:"Talk Show",        subscribers:"5.6M", episodes:412, imgUrl:IMG_STUDIO_LETS_TALK, color:"#9FB6DC", bio:"The show that starts where others are afraid to go." },
   ],
   interviews:[
-    { id:"i1", guest:"Elon Musk",     host:"Zara K.",     topic:"The Mars Blueprint",         views:"44M", date:"Jun 12", imgUrl:IMG_STUDIO_BLUE, color:"#7FA6F0", hot:true  },
-    { id:"i2", guest:"Cardi B",       host:"Marcus B.",   topic:"Music, Money & Motherhood",  views:"38M", date:"Jun 10", imgUrl:IMG_STUDIO_LETS_TALK, color:"#D2687A", hot:true  },
-    { id:"i3", guest:"Satya Nadella", host:"Tech Talks",  topic:"AI & the Future of Work",    views:"21M", date:"Jun 8",  imgUrl:IMG_STUDIO_TABLE, color:"#8FA8DE", hot:false },
-    { id:"i4", guest:"Oprah Winfrey", host:"Pod Legends", topic:"Legacy & Leadership",        views:"62M", date:"Jun 5",  imgUrl:IMG_COMEDY_NEON, color:"#7FA6F0", hot:true  },
+    { id:"i1", guest:"Rafael Voss",   host:"Nina Calder",     topic:"The Mars Blueprint",         views:"44M", date:"Jun 12", imgUrl:IMG_STUDIO_BLUE, color:"#7FA6F0", hot:true  },
+    { id:"i2", guest:"Aria Sloane",   host:"Devon Marsh",   topic:"Music, Money & Motherhood",  views:"38M", date:"Jun 10", imgUrl:IMG_STUDIO_LETS_TALK, color:"#D2687A", hot:true  },
+    { id:"i3", guest:"Priya Anand",   host:"Tech Talks",   topic:"AI & the Future of Work",    views:"21M", date:"Jun 8",  imgUrl:IMG_STUDIO_TABLE, color:"#8FA8DE", hot:false },
+    { id:"i4", guest:"Marisol Vega",  host:"Pod Legends", topic:"Legacy & Leadership",        views:"62M", date:"Jun 5",  imgUrl:IMG_COMEDY_NEON, color:"#7FA6F0", hot:true  },
   ],
   trending:[
     { id:"t1", title:"AI Side Hustle Tools",       platform:"Social Platforms",  change:"+840%", heat:98, imgUrl:IMG_MIC_NEON, color:"#7FA6F0", desc:"ChatGPT & Claude used to earn $5K/mo — creators showing how live on PodChat" },
@@ -557,7 +557,7 @@ function GPanel({title,color,onMore,children}){
 function LiveScreen({content}){
   const [sel,setSel]=useState(null);
   const [log,setLog]=useState([
-    {u:"Amaka_T",m:"This is insane 🔥🔥",c:T.cyan},{u:"PodFan99",m:"Marcus is hilarious",c:T.pink},{u:"TechGuru",m:"Spitting facts right now",c:T.purple},
+    {u:"Nova_T",m:"This is insane 🔥🔥",c:T.cyan},{u:"PodFan99",m:"Marcus is hilarious",c:T.pink},{u:"TechGuru",m:"Spitting facts right now",c:T.purple},
   ]);
   const [msg,setMsg]=useState("");
   const send=()=>{ if(msg.trim()){setLog(l=>[...l,{u:"You",m:msg,c:T.green}]);setMsg("");} };
@@ -1689,7 +1689,7 @@ function CMSList({items,fields,blank,onChange,onConfirm,onPreview}){
 const copyText=(t)=>{ try{ navigator.clipboard?.writeText(t).catch(()=>{}); }catch(e){} };
 
 const DUB_VOICES=[
-  {id:"amara",name:"Amara",desc:"Warm · Cinematic",icon:"🎧"},
+  {id:"aurora",name:"Aurora",desc:"Warm · Cinematic",icon:"🎧"},
   {id:"dax",name:"Dax",desc:"Energetic · Promo",icon:"⚡"},
   {id:"sable",name:"Sable",desc:"Calm · Narrator",icon:"🌙"},
 ];
@@ -1871,7 +1871,7 @@ function AIStudioScreen({shows=[]}){
 // ═══════════════════════════════════════════════════════════════════════════════
 function TranslationScreen(){
   const [selLang,setSelLang]=useState("es");
-  const [selVoice,setSelVoice]=useState("amara");
+  const [selVoice,setSelVoice]=useState("aurora");
   const [dubbing,setDubbing]=useState(false);
   const [progress,setProgress]=useState(0);
   const [dubbed,setDubbed]=useState([]);
@@ -2071,7 +2071,7 @@ function HotSeatScreen(){
   const [phase,setPhase]=useState("lobby");
   const [raised,setRaised]=useState(false);
   const [queue,setQueue]=useState([
-    {id:1,name:"Amaka_T",country:"🇳🇬",wait:"2 min",msg:"I have a hot take on AI comedy!"},
+    {id:1,name:"Nova_T",country:"🇳🇬",wait:"2 min",msg:"I have a hot take on AI comedy!"},
     {id:2,name:"PodFan99",country:"🇺🇸",wait:"4 min",msg:"Want to debate the topic live"},
     {id:3,name:"ComedyKing",country:"🇬🇧",wait:"6 min",msg:"Heard about this from Twitter"},
   ]);
@@ -2079,7 +2079,7 @@ function HotSeatScreen(){
   const [chatLog,setChatLog]=useState([
     {u:"Marcus_B",m:"Who's on the Hot Seat next? 👀",c:T.cyan},
     {u:"TechGuru",m:"This format is INCREDIBLE",c:T.purple},
-    {u:"Amaka_T",m:"I raised my hand!! 🙌",c:T.pink},
+    {u:"Nova_T",m:"I raised my hand!! 🙌",c:T.pink},
   ]);
   const [msg,setMsg]=useState("");
 
@@ -2122,7 +2122,7 @@ function HotSeatScreen(){
             </div>
           </div>
           <div style={{fontSize:14,fontWeight:700,color:T.t1,marginBottom:4}}>AI Comedy Takeover Live</div>
-          <div style={{fontSize:11,color:T.t2,marginBottom:14}}>Marcus Bright × Dr. Amara Osei</div>
+          <div style={{fontSize:11,color:T.t2,marginBottom:14}}>Marcus Bright × Dr. Elena Vance</div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
             <Btn color={T.gold} filled small>◆ Send Tip</Btn>
             <Btn color={T.purple} small>✂ Clip This</Btn>
@@ -2367,10 +2367,10 @@ function AnalyticsScreen(){
         <div style={{fontSize:13,fontWeight:700,color:T.t1,marginBottom:14}}>⭐ Your Top Superfans</div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:10}}>
           {[
-            {name:"Amaka_T",      country:"🇳🇬",spent:"₦84K",eps:24,tier:"Gold"},
+            {name:"Nova_T",      country:"🇳🇬",spent:"₦84K",eps:24,tier:"Gold"},
             {name:"PodFan99",     country:"🇺🇸",spent:"$156",eps:22,tier:"Gold"},
             {name:"ComedyKing",   country:"🇬🇧",spent:"£92",eps:20,tier:"Silver"},
-            {name:"TechGuru_SA",  country:"🇿🇦",spent:"R340",eps:18,tier:"Silver"},
+            {name:"TechGuru_DE",  country:"🇿🇦",spent:"R340",eps:18,tier:"Silver"},
             {name:"LaughLover_KE",country:"🇰🇪",spent:"KSh1.2K",eps:16,tier:"Bronze"},
           ].map((f,i)=>(
             <div key={i} style={{background:`${i===0?T.gold:i<=1?T.gold:i<=3?T.t2:T.orange}0A`,
@@ -2396,19 +2396,19 @@ function MarketplaceScreen(){
   const [applied,setApplied]=useState([]);
 
   const BRANDS=[
-    {id:"b1",name:"AfriTech Hub",    niche:"Tech",       budget:"$2K–$5K/ep",logo:"🏢",desc:"Pan-African tech brand seeking podcast partners with engaged startup audience.",color:T.cyan,    rating:"4.9"},
-    {id:"b2",name:"NaijaSound",      niche:"Music",      budget:"$500–$2K/ep",logo:"🎵",desc:"African music streaming platform. Looking for music & culture podcasters.",color:T.purple,  rating:"4.7"},
+    {id:"b1",name:"CoreTech Hub",    niche:"Tech",       budget:"$2K–$5K/ep",logo:"🏢",desc:"Pan-African tech brand seeking podcast partners with engaged startup audience.",color:T.cyan,    rating:"4.9"},
+    {id:"b2",name:"PulseSound",      niche:"Music",      budget:"$500–$2K/ep",logo:"🎵",desc:"African music streaming platform. Looking for music & culture podcasters.",color:T.purple,  rating:"4.7"},
     {id:"b3",name:"PodEquip Pro",    niche:"Creator",    budget:"$1K–$3K/ep", logo:"🎙",desc:"Professional podcast equipment. Ideal for creator-focused shows.",          color:T.gold,    rating:"4.8"},
-    {id:"b4",name:"ComedyFest Lagos",niche:"Comedy",     budget:"$800–$2K/ep",logo:"😂",desc:"Annual comedy festival. Seeking comedy podcasters for sponsorship.",         color:T.pink,    rating:"5.0"},
+    {id:"b4",name:"ComedyFest Live",niche:"Comedy",     budget:"$800–$2K/ep",logo:"😂",desc:"Annual comedy festival. Seeking comedy podcasters for sponsorship.",         color:T.pink,    rating:"5.0"},
     {id:"b5",name:"WealthBuilder",   niche:"Finance",    budget:"$3K–$8K/ep", logo:"💰",desc:"Investment platform targeting African diaspora. High CPM niche.",            color:T.green,   rating:"4.6"},
-    {id:"b6",name:"FitLife Africa",  niche:"Health",     budget:"$500–$1.5K/ep",logo:"🏋",desc:"Health & wellness brand. Looking for authentic voices in the health space.", color:T.orange,  rating:"4.5"},
+    {id:"b6",name:"FitLife Global",  niche:"Health",     budget:"$500–$1.5K/ep",logo:"🏋",desc:"Health & wellness brand. Looking for authentic voices in the health space.", color:T.orange,  rating:"4.5"},
   ];
 
   const GUESTS=[
-    {id:"g1",name:"Dr. Kwame Mensah",  title:"AI Researcher",        fee:"Free–$500",   niche:"Tech",    country:"🇬🇭",rating:"4.9",img:"👨‍🔬"},
+    {id:"g1",name:"Dr. Adrian Kohl",  title:"AI Researcher",        fee:"Free–$500",   niche:"Tech",    country:"🇬🇭",rating:"4.9",img:"👨‍🔬"},
     {id:"g2",name:"Funke Okonkwo",     title:"Stand-up Comedian",    fee:"$200–$800",   niche:"Comedy",  country:"🇳🇬",rating:"4.8",img:"😂"},
-    {id:"g3",name:"Zara Kimani",       title:"Finance Expert",       fee:"Free",        niche:"Finance", country:"🇰🇪",rating:"5.0",img:"📈"},
-    {id:"g4",name:"Marcus Osei",       title:"Entrepreneur",         fee:"$100–$500",   niche:"Business",country:"🇬🇭",rating:"4.7",img:"💼"},
+    {id:"g3",name:"Zara Lindqvist",       title:"Finance Expert",       fee:"Free",        niche:"Finance", country:"🇰🇪",rating:"5.0",img:"📈"},
+    {id:"g4",name:"Marcus Bright",       title:"Entrepreneur",         fee:"$100–$500",   niche:"Business",country:"🇬🇭",rating:"4.7",img:"💼"},
     {id:"g5",name:"Dr. Lena Park",     title:"Wellness Coach",       fee:"Free–$200",   niche:"Health",  country:"🇰🇷",rating:"4.9",img:"🧘"},
     {id:"g6",name:"Tony Adeleke",      title:"Political Commentator",fee:"$300–$1K",    niche:"Politics",country:"🇳🇬",rating:"4.6",img:"🎤"},
   ];
@@ -2489,7 +2489,7 @@ function ComedyFormatsScreen(){
   const [mode,setMode]=useState("roast");
   const [votes,setVotes]=useState({a:142,b:89});
   const [micQueue,setMicQueue]=useState([
-    {name:"ComedyKing_NG",flag:"🇳🇬",status:"performing",time:"2:14"},
+    {name:"ComedyKing_US",flag:"🇳🇬",status:"performing",time:"2:14"},
     {name:"LaughRiot_UK",  flag:"🇬🇧",status:"waiting",  time:"Up next"},
     {name:"JokeSmith_US",  flag:"🇺🇸",status:"waiting",  time:"~5 min"},
   ]);
@@ -3470,10 +3470,10 @@ function PasteWinScreen({user}){
   };
 
   const LEADERBOARD=[
-    {rank:1,name:"ComedyKing_NG",  country:"🇳🇬",title:"Why We're All Clowns",      type:"Comedy",  votes:2847,trend:"+284",img:IMG_COMEDY_NIGHT},
-    {rank:2,name:"TechGuru_SA",    country:"🇿🇦",title:"AI Changed My Life in 30 Days",type:"Podcast",votes:2341,trend:"+156",img:IMG_MIC_NEON},
-    {rank:3,name:"Amaka_Talks",    country:"🇳🇬",title:"The Real Side Hustle Story", type:"Interview",votes:1987,trend:"+201",img:IMG_STUDIO_BLUE},
-    {rank:4,name:"PodFan_UK",      country:"🇬🇧",title:"Open Mic Lagos Recap",       type:"Comedy",  votes:1654,trend:"+89", img:IMG_COMEDY_NEON},
+    {rank:1,name:"ComedyKing_US",  country:"🇳🇬",title:"Why We're All Clowns",      type:"Comedy",  votes:2847,trend:"+284",img:IMG_COMEDY_NIGHT},
+    {rank:2,name:"TechGuru_DE",    country:"🇿🇦",title:"AI Changed My Life in 30 Days",type:"Podcast",votes:2341,trend:"+156",img:IMG_MIC_NEON},
+    {rank:3,name:"Nova_Talks",    country:"🇳🇬",title:"The Real Side Hustle Story", type:"Interview",votes:1987,trend:"+201",img:IMG_STUDIO_BLUE},
+    {rank:4,name:"PodFan_UK",      country:"🇬🇧",title:"Open Mic Midnight Recap",       type:"Comedy",  votes:1654,trend:"+89", img:IMG_COMEDY_NEON},
     {rank:5,name:"JokeSmith",      country:"🇺🇸",title:"Roast of Silicon Valley",    type:"Comedy",  votes:1432,trend:"+123",img:IMG_COMEDY_NIGHT},
   ];
 
