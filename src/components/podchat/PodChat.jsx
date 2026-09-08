@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import ComingSoon from "./ComingSoon";
+import UploadEpisode from "./UploadEpisode";
 import studioDramatic from "@/assets/podchat/studio-dramatic.jpg";
 import studioTable from "@/assets/podchat/studio-table.jpg";
 import studioBlue from "@/assets/podchat/studio-blue.jpg";
@@ -212,7 +213,7 @@ function Btn({children,color=T.purple,filled=false,small=false,onClick,style={}}
       ? "0 8px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.20)"
       : "0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.10)",
   };
-  return <button onClick={onClick} onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
+  return <button data-live={onClick?"1":undefined} onClick={onClick} onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
     style={{...baseStyle,backdropFilter:"blur(20px) saturate(180%)",borderRadius:12,
       padding:small?"7px 16px":"10px 22px",
       fontSize:small?11:12,fontWeight:600,cursor:"pointer",letterSpacing:.3,
@@ -456,10 +457,10 @@ function ArrowBtn({side,onClick,icon}){
 }
 
 // ─── CARD COMPONENTS ──────────────────────────────────────────────────────────
-function ShowCard({item}){
+function ShowCard({item,onOpen}){
   const [h,setH]=useState(false);
   const acc=item.color||T.cyan;
-  return <div onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
+  return <div onClick={()=>onOpen&&onOpen()} onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
     style={{borderRadius:16,overflow:"hidden",cursor:"pointer",transition:"all .25s",border:`1px solid ${h?acc+"55":T.border}`,transform:h?"translateY(-4px)":"none",boxShadow:h?`0 12px 40px ${acc}20`:"none"}}>
     <div style={{height:130,position:"relative",overflow:"hidden"}}>
       <ImgFallback src={item.imgUrl||item.img} alt={item.title} style={{filter:"brightness(.5)",transform:h?"scale(1.06)":"scale(1)",transition:"transform .4s"}} fallback={acc}/>
@@ -477,9 +478,9 @@ function ShowCard({item}){
   </div>;
 }
 
-function PersonCard({item}){
+function PersonCard({item,onOpen}){
   const [h,setH]=useState(false);
-  return <div onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
+  return <div onClick={()=>onOpen&&onOpen()} onMouseEnter={()=>setH(true)} onMouseLeave={()=>setH(false)}
     style={{borderRadius:16,overflow:"hidden",cursor:"pointer",transition:"all .3s",border:`1px solid ${h?item.color+"55":T.border}`,transform:h?"translateY(-4px)":"none"}}>
     <div style={{height:150,position:"relative",overflow:"hidden"}}>
       <ImgFallback src={item.imgUrl} alt={item.name} style={{filter:"brightness(.5)",objectPosition:"top",transform:h?"scale(1.06)":"scale(1)",transition:"transform .4s"}} fallback={item.color}/>
@@ -509,13 +510,15 @@ function MiniRow({img,title,sub,right,fallback=T.purple}){
 
 // ─── HOME ─────────────────────────────────────────────────────────────────────
 function HomeScreen({content,setPage}){
+  const [soon,setSoon]=useState(null);
   return <div>
+    <ComingSoon topic={soon} onClose={()=>setSoon(null)} T={T}/>
     <HeroStrip highlights={content.highlights} onNavigate={setPage}/>
     <SecRow title="🎙 Top Podcasts" color={T.cyan} onMore={()=>setPage("podcasts")}>
-      {content.shows.slice(0,4).map(s=><ShowCard key={s.id} item={s}/>)}
+      {content.shows.slice(0,4).map(s=><ShowCard key={s.id} item={s} onOpen={()=>setSoon("live")}/>)}
     </SecRow>
     <SecRow title="😂 Comedy Hub" color={T.pink} onMore={()=>setPage("comedy")}>
-      {content.comedy.slice(0,4).map(c=><PersonCard key={c.id} item={c}/>)}
+      {content.comedy.slice(0,4).map(c=><PersonCard key={c.id} item={c} onOpen={()=>setSoon("live")}/>)}
     </SecRow>
     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,marginBottom:28}}>
       <GPanel title="🔥 Hot Trends" color={T.orange} onMore={()=>setPage("trending")}>
@@ -635,22 +638,26 @@ function LiveScreen({content,onNavigate}){
 
 // ─── PODCASTS ─────────────────────────────────────────────────────────────────
 function PodcastsScreen({content}){
+  const [soon,setSoon]=useState(null);
   const cats=["All",...new Set(content.shows.map(s=>s.category))];
   const [cat,setCat]=useState("All");
   const shown=cat==="All"?content.shows:content.shows.filter(s=>s.category===cat);
   return <div>
+    <ComingSoon topic={soon} onClose={()=>setSoon(null)} T={T}/>
     <div style={{display:"flex",gap:8,marginBottom:20,flexWrap:"wrap"}}>
       {cats.map(c=><button key={c} onClick={()=>setCat(c)} style={{background:cat===c?"rgba(127,166,240,.15)":"rgba(255,255,255,.04)",border:`1px solid ${cat===c?T.cyan:T.border}`,color:cat===c?T.cyan:T.t2,padding:"7px 15px",borderRadius:20,fontSize:11,fontWeight:700,cursor:"pointer"}}>{c}</button>)}
     </div>
     <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16}}>
-      {shown.map(p=><ShowCard key={p.id} item={p}/>)}
+      {shown.map(p=><ShowCard key={p.id} item={p} onOpen={()=>setSoon("live")}/>)}
     </div>
   </div>;
 }
 
 // ─── COMEDY ───────────────────────────────────────────────────────────────────
 function ComedyScreen({content}){
+  const [soon,setSoon]=useState(null);
   return <div>
+      <ComingSoon topic={soon} onClose={()=>setSoon(null)} T={T}/>
     <div style={{borderRadius:22,overflow:"hidden",height:240,position:"relative",marginBottom:24}}>
       <ImgFallback src={IMG_COMEDY_NIGHT} alt="comedy" style={{filter:"brightness(.4)"}}/>
       <div style={{position:"absolute",inset:0,background:"linear-gradient(135deg,rgba(210,104,122,.4),rgba(11,17,27,.72))"}}/>
@@ -678,7 +685,7 @@ function ComedyScreen({content}){
                 <div><div style={{fontSize:13,fontWeight:800,color:T.t1}}>{ch.subscribers}</div><div style={{fontSize:9,color:T.t3}}>SUBS</div></div>
                 <div><div style={{fontSize:13,fontWeight:800,color:T.t1}}>{ch.episodes}</div><div style={{fontSize:9,color:T.t3}}>EPS</div></div>
               </div>
-              <Btn small color={ch.color} filled>Watch →</Btn>
+              <Btn small color={ch.color} filled onClick={(e)=>{e.stopPropagation();onOpen&&onOpen();}}>Watch →</Btn>
             </div>
           </div>
         </div>
@@ -689,7 +696,9 @@ function ComedyScreen({content}){
 
 // ─── INTERVIEWS ───────────────────────────────────────────────────────────────
 function InterviewsScreen({content}){
+  const [soon,setSoon]=useState(null);
   return <div>
+      <ComingSoon topic={soon} onClose={()=>setSoon(null)} T={T}/>
     <div style={{fontSize:11,fontWeight:700,letterSpacing:3,textTransform:"uppercase",color:T.t2,marginBottom:18}}>◈ Featured Interviews</div>
     <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:16}}>
       {content.interviews.map(i=>(
@@ -708,7 +717,7 @@ function InterviewsScreen({content}){
             <div style={{fontSize:11,color:T.t2,marginBottom:4}}>with {i.host}</div>
             <div style={{fontSize:12,color:i.color||T.purple,fontWeight:600,marginBottom:14}}>{i.topic}</div>
             <div style={{display:"flex",gap:10,alignItems:"center"}}>
-              <Btn small color={i.color||T.purple} filled>▶ Watch</Btn>
+              <Btn small color={i.color||T.purple} filled onClick={(e)=>{e.stopPropagation();onOpen&&onOpen();}}>▶ Watch</Btn>
               <span style={{fontSize:12,color:T.gold,fontWeight:700}}>👁 {i.views}</span>
             </div>
           </div>
@@ -757,6 +766,7 @@ function TrendingScreen({content}){
 
 // ─── HUSTLE ───────────────────────────────────────────────────────────────────
 function HustleScreen({content}){
+  const [soon,setSoon]=useState(null);
   const [sel,setSel]=useState(null);
   const h=sel?content.hustles.find(x=>x.id===sel):null;
   if(h) return <div>
@@ -782,8 +792,8 @@ function HustleScreen({content}){
             </div>
           ))}
           <div style={{display:"flex",gap:10,marginTop:16}}>
-            <Btn color={h.color} filled>🚀 Start This Hustle</Btn>
-            <Btn color={T.gold}>💰 Find Brands</Btn>
+            <Btn color={h.color} filled onClick={()=>setSoon("marketplace")}>🚀 Start This Hustle</Btn>
+            <Btn color={T.gold} onClick={()=>setSoon("marketplace")}>💰 Find Brands</Btn>
           </div>
         </div>
       </div>
@@ -800,6 +810,7 @@ function HustleScreen({content}){
   </div>;
 
   return <div>
+      <ComingSoon topic={soon} onClose={()=>setSoon(null)} T={T}/>
     <div style={{borderRadius:22,overflow:"hidden",height:200,position:"relative",marginBottom:24}}>
       <ImgFallback src={IMG_STUDIO_DRAMATIC} alt="hustle" style={{filter:"brightness(.4)"}}/>
       <div style={{position:"absolute",inset:0,background:"linear-gradient(135deg,rgba(245,158,11,.3),rgba(11,17,27,.72))"}}/>
@@ -830,11 +841,15 @@ function HustleScreen({content}){
 
 // ─── STUDIO ───────────────────────────────────────────────────────────────────
 function StudioScreen(){
+  const [soon,setSoon]=useState(null);
   const [rec,setRec]=useState(false);
   const [secs,setSecs]=useState(0);
   useEffect(()=>{ if(!rec){setSecs(0);return;} const t=setInterval(()=>setSecs(s=>s+1),1000);return()=>clearInterval(t); },[rec]);
   const fmt=s=>`${String(Math.floor(s/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`;
   return <div>
+    <div style={{marginBottom:20}}><UploadEpisode T={T}/></div>
+    <div style={{marginBottom:20}}><UploadEpisode T={T}/></div>
+      <ComingSoon topic={soon} onClose={()=>setSoon(null)} T={T}/>
     <div style={{borderRadius:22,overflow:"hidden",height:220,position:"relative",marginBottom:22}}>
       <ImgFallback src={IMG_STUDIO_DRAMATIC} alt="studio" style={{filter:"brightness(.4)"}}/>
       <div style={{position:"absolute",inset:0,background:"linear-gradient(135deg,rgba(127,166,240,.2),rgba(139,92,246,.2),rgba(16,18,22,.65))"}}/>
@@ -871,7 +886,7 @@ function StudioScreen(){
                 <div style={{fontSize:10,color:T.t2}}>{ep.v} views</div>
               </div>
               <Chip label={ep.s} color={ep.s==="Published"?T.green:T.gold}/>
-              <Btn small>Edit</Btn>
+              <Btn small onClick={()=>setSoon("ai")}>Edit</Btn>
             </div>
           ))}
         </div>
@@ -889,7 +904,7 @@ function StudioScreen(){
         <div style={{background:`linear-gradient(135deg,rgba(245,158,11,.08),rgba(16,18,22,.9))`,border:`1px solid rgba(245,158,11,.2)`,borderRadius:18,padding:20}}>
           <div style={{fontSize:11,fontWeight:700,color:T.gold,marginBottom:8}}>✦ AI Show Assistant</div>
           <div style={{fontSize:12,color:T.t2,lineHeight:1.7,marginBottom:12}}>Suggested: <b style={{color:T.t1}}>"Gen Z Is Saving Comedy"</b> — trending +340%. Est. 80K plays.</div>
-          <Btn color={T.gold} filled small>Generate Show Notes</Btn>
+          <Btn color={T.gold} filled small onClick={()=>setSoon("ai")}>Generate Show Notes</Btn>
         </div>
       </div>
     </div>
@@ -2071,6 +2086,7 @@ function TranslationScreen(){
 // X-FACTOR 2 — LIVE HOT SEAT UPGRADE
 // ═══════════════════════════════════════════════════════════════════════════════
 function HotSeatScreen(){
+  const [soon,setSoon]=useState(null);
   const [phase,setPhase]=useState("lobby");
   const [raised,setRaised]=useState(false);
   const [queue,setQueue]=useState([
@@ -2094,6 +2110,7 @@ function HotSeatScreen(){
 
   return(
     <div>
+      <ComingSoon topic={soon} onClose={()=>setSoon(null)} T={T}/>
       <div style={{borderRadius:22,overflow:"hidden",height:200,position:"relative",marginBottom:22}}>
         <ImgFallback src={IMG_STUDIO_PODCAST} alt="hot seat" style={{filter:"brightness(.4)"}} fallback={T.pink}/>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(135deg,rgba(210,104,122,.35),rgba(11,17,27,.72))"}}/>
@@ -2127,8 +2144,8 @@ function HotSeatScreen(){
           <div style={{fontSize:14,fontWeight:700,color:T.t1,marginBottom:4}}>AI Comedy Takeover Live</div>
           <div style={{fontSize:11,color:T.t2,marginBottom:14}}>Marcus Bright × Dr. Elena Vance</div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-            <Btn color={T.gold} filled small>◆ Send Tip</Btn>
-            <Btn color={T.purple} small>✂ Clip This</Btn>
+            <Btn color={T.gold} filled small onClick={()=>setSoon("hotseat")}>◆ Send Tip</Btn>
+            <Btn color={T.purple} small onClick={()=>setSoon("hotseat")}>✂ Clip This</Btn>
           </div>
         </div>
 
@@ -2395,6 +2412,7 @@ function AnalyticsScreen(){
 // X-FACTOR 4 — GUEST & BRAND MARKETPLACE
 // ═══════════════════════════════════════════════════════════════════════════════
 function MarketplaceScreen(){
+  const [soon,setSoon]=useState(null);
   const [tab,setTab]=useState("brands");
   const [applied,setApplied]=useState([]);
 
@@ -2420,6 +2438,7 @@ function MarketplaceScreen(){
 
   return(
     <div>
+      <ComingSoon topic={soon} onClose={()=>setSoon(null)} T={T}/>
       <div style={{borderRadius:22,overflow:"hidden",height:190,position:"relative",marginBottom:22}}>
         <ImgFallback src={IMG_STUDIO_TABLE} alt="marketplace" style={{filter:"brightness(.4)"}} fallback={T.green}/>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(135deg,rgba(0,255,136,.25),rgba(11,17,27,.72))"}}/>
@@ -2489,6 +2508,7 @@ function MarketplaceScreen(){
 // X-FACTOR 5 — COMEDY FORMATS (ROAST BATTLE + OPEN MIC)
 // ═══════════════════════════════════════════════════════════════════════════════
 function ComedyFormatsScreen(){
+  const [soon,setSoon]=useState(null);
   const [mode,setMode]=useState("roast");
   const [votes,setVotes]=useState({a:142,b:89});
   const [micQueue,setMicQueue]=useState([
@@ -2500,6 +2520,7 @@ function ComedyFormatsScreen(){
 
   return(
     <div>
+      <ComingSoon topic={soon} onClose={()=>setSoon(null)} T={T}/>
       <div style={{borderRadius:22,overflow:"hidden",height:200,position:"relative",marginBottom:22}}>
         <ImgFallback src={IMG_COMEDY_NEON} alt="comedy formats" style={{filter:"brightness(.4)"}} fallback={T.pink}/>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(135deg,rgba(210,104,122,.4),rgba(11,17,27,.72))"}}/>
@@ -2619,8 +2640,8 @@ function ComedyFormatsScreen(){
               :"Two creators. One hot topic. Live audience votes in real time. The winner gets algorithmically boosted for 7 days. Controversy = engagement = growth."}
           </div>
           <div style={{display:"flex",gap:12,justifyContent:"center"}}>
-            <Btn color={T.pink} filled>{mode==="special"?"🎭 Upload My Special":"⚔️ Start a Pod War"}</Btn>
-            <Btn color={T.gold}>{mode==="special"?"💰 Set Ticket Price":"📋 View Active Wars"}</Btn>
+            <Btn color={T.pink} filled onClick={(e)=>{e.stopPropagation();onOpen&&onOpen();}}>{mode==="special"?"🎭 Upload My Special":"⚔️ Start a Pod War"}</Btn>
+            <Btn color={T.gold} onClick={(e)=>{e.stopPropagation();onOpen&&onOpen();}}>{mode==="special"?"💰 Set Ticket Price":"📋 View Active Wars"}</Btn>
           </div>
         </div>
       )}
@@ -2632,6 +2653,7 @@ function ComedyFormatsScreen(){
 // X-FACTOR 6 — SIMULCAST HQ
 // ═══════════════════════════════════════════════════════════════════════════════
 function SimulcastScreen(){
+  const [soon,setSoon]=useState(null);
   const [platforms,setPlatforms]=useState({podchat:true,spotify:false,youtube:false,twitter:false,facebook:false});
   const [streaming,setStreaming]=useState(false);
   const [secs,setSecs]=useState(0);
@@ -2657,6 +2679,7 @@ function SimulcastScreen(){
 
   return(
     <div>
+      <ComingSoon topic={soon} onClose={()=>setSoon(null)} T={T}/>
       <div style={{borderRadius:22,overflow:"hidden",height:190,position:"relative",marginBottom:22}}>
         <ImgFallback src={IMG_STUDIO_BLUE} alt="simulcast" style={{filter:"brightness(.4)"}} fallback={T.purple}/>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(135deg,rgba(90,120,200,.35),rgba(11,17,27,.72))"}}/>
@@ -2874,6 +2897,7 @@ function RevenueDashboardScreen({podCoins,setPodCoins}){
 // X-FACTOR 8 — CONTENT OWNERSHIP & DATA EXPORT
 // ═══════════════════════════════════════════════════════════════════════════════
 function OwnershipScreen(){
+  const [soon,setSoon]=useState(null);
   const [exported,setExported]=useState({});
   const [cert,setCert]=useState(false);
 
@@ -2888,6 +2912,7 @@ function OwnershipScreen(){
 
   return(
     <div>
+      <ComingSoon topic={soon} onClose={()=>setSoon(null)} T={T}/>
       <div style={{borderRadius:22,overflow:"hidden",height:190,position:"relative",marginBottom:22}}>
         <ImgFallback src={IMG_STUDIO_PODCAST} alt="ownership" style={{filter:"brightness(.4)"}} fallback={T.cyan}/>
         <div style={{position:"absolute",inset:0,background:"linear-gradient(135deg,rgba(127,166,240,.3),rgba(11,17,27,.72))"}}/>
@@ -3803,6 +3828,26 @@ function WelcomeModal({brand,onSelect}){
 // ─── ROOT ─────────────────────────────────────────────────────────────────────
 export default function PodChat(){
   const [content,setContent]=useState(loadContent);
+  // Anything that looks clickable but has no handler of its own bubbles
+  // up to here. Rather than a dead click, the person gets told what is
+  // coming and pointed at something that does work.
+  const [soon,setSoon]=useState(null);
+  const SOON_BY_PAGE={live:"live",hotseat:"hotseat",translate:"translate",
+    wallet:"wallet",revenue:"wallet",marketplace:"marketplace",
+    simulcast:"simulcast",analytics:"analytics",ai_studio:"ai",
+    comedy_formats:"live",ownership:"ai"};
+  const catchDead=(e)=>{
+    const el=e.target.closest("[data-live],a,input,textarea,select,label");
+    if(el) return;
+    let n=e.target, hops=0;
+    while(n&&hops<4){
+      if(n.style&&n.style.cursor==="pointer"){
+        setSoon(SOON_BY_PAGE[page]||"live");
+        return;
+      }
+      n=n.parentElement; hops++;
+    }
+  };
   const [page,setPage]=useState("home");
   const [profile,setProfile]=useState(null);
   const [coins,setCoins]=useState(2840);
@@ -3850,7 +3895,8 @@ export default function PodChat(){
   const acc=content.brand.accentColor||T.cyan;
   const playTrack=(item)=>setAudioTrack({title:item.title||item.name,host:item.host||item.specialty||"PodChat",color:item.color||T.cyan});
 
-  return <div style={{minHeight:"100vh",background:"radial-gradient(ellipse at 12% -10%, #1a2438 0%, #121a29 42%, #0B111B 100%)",fontFamily:"'Manrope', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif",color:T.t1,display:"flex",position:"relative",overflow:"hidden"}}>
+  return <div onClick={catchDead} style={{minHeight:"100vh",background:"radial-gradient(ellipse at 12% -10%, #1a2438 0%, #121a29 42%, #0B111B 100%)",fontFamily:"'Manrope', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif",color:T.t1,display:"flex",position:"relative",overflow:"hidden"}}>
+      <ComingSoon topic={soon} onClose={()=>setSoon(null)} onNavigate={setPage} T={T}/>
     {!user&&<AuthScreen onAuth={(u)=>{setUser(u);if(!profile)setProfile(u.type);}}/>}
       {user&&!profile&&<WelcomeModal brand={content.brand} onSelect={setProfile}/>}
       {showSearch&&<SearchOverlay content={content} onClose={()=>setShowSearch(false)} onNavigate={(p)=>{setPage(p);setShowSearch(false);}}/>}

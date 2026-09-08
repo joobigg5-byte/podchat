@@ -307,7 +307,7 @@ app.post('/api/shows/:showId/episodes', auth(), (req, res) => {
     return res.status(403).json({ error: 'That is not your show.' })
   }
 
-  const { title, description, audioUrl, durationSec } = req.body ?? {}
+  const { title, description, audioUrl, durationSec, mediaKind } = req.body ?? {}
   if (!title?.trim()) return res.status(400).json({ error: 'An episode title is required.' })
 
   const ep = {
@@ -317,13 +317,14 @@ app.post('/api/shows/:showId/episodes', auth(), (req, res) => {
     description: description?.trim() ?? null,
     audio_url: audioUrl ?? null,
     duration_sec: Number(durationSec) || null,
+    media_kind: mediaKind === 'video' ? 'video' : 'audio',
     published_at: now(),
     created_at: now(),
   }
 
   db.prepare(`
-    INSERT INTO episodes (id, show_id, title, description, audio_url, duration_sec, published_at, created_at)
-    VALUES (@id, @show_id, @title, @description, @audio_url, @duration_sec, @published_at, @created_at)
+    INSERT INTO episodes (id, show_id, title, description, audio_url, duration_sec, media_kind, published_at, created_at)
+    VALUES (@id, @show_id, @title, @description, @audio_url, @duration_sec, @media_kind, @published_at, @created_at)
   `).run(ep)
 
   db.prepare('UPDATE shows SET episode_count = episode_count + 1 WHERE id = ?').run(show.id)
