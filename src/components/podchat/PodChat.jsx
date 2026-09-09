@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import ComingSoon from "./ComingSoon";
 import UploadEpisode from "./UploadEpisode";
+import EpisodeList from "./EpisodeList";
 import studioDramatic from "@/assets/podchat/studio-dramatic.jpg";
 import studioTable from "@/assets/podchat/studio-table.jpg";
 import studioBlue from "@/assets/podchat/studio-blue.jpg";
@@ -100,6 +101,18 @@ const IMG_MIC_GOLD_HP = micBrass;
 const IMG_MIC_GOLD_SILVER = micBrass;
 const IMG_MIC_CONDENSER = micCondenser;
 
+const IMAGES = {
+  STUDIO_DRAMATIC: IMG_STUDIO_DRAMATIC, STUDIO_TABLE: IMG_STUDIO_TABLE,
+  STUDIO_BLUE: IMG_STUDIO_BLUE, STUDIO_PODCAST: IMG_STUDIO_PODCAST,
+  STUDIO_LETS_TALK: IMG_STUDIO_LETS_TALK, STUDIO_DESK: IMG_STUDIO_PODCAST,
+  LIVE_CROWD: IMG_LIVE_CROWD,
+  COMEDY_NEON: IMG_COMEDY_NEON, COMEDY_NIGHT: IMG_COMEDY_NIGHT,
+  MIC_CSL: IMG_MIC_CSL, MIC_RED: IMG_MIC_RED, MIC_NEON: IMG_MIC_NEON,
+  MIC_RGB: IMG_MIC_RGB, MIC_BLACK: IMG_MIC_BLACK,
+  MIC_GOLD_HP: IMG_MIC_GOLD_HP, MIC_GOLD_SILVER: IMG_MIC_GOLD_SILVER,
+  MIC_CONDENSER: IMG_MIC_CONDENSER,
+};
+
 // ─── DEFAULT CONTENT ─────────────────────────────────────────────────────────
 const DEFAULT_CONTENT = {
   brand:{ name:"PodChat", tagline:"Where Every Voice Is a Show", logoUrl:"", accentColor:"#7FA6F0" },
@@ -155,6 +168,21 @@ const store = {
 };
 const SKEY = "podchat_v2";
 function loadContent(){ try{ const r=store.get(SKEY); if(r) return {...DEFAULT_CONTENT,...JSON.parse(r)}; }catch(_){} return DEFAULT_CONTENT; }
+
+function rowsToContent(rows, base){
+  if(!Array.isArray(rows)||!rows.length) return base;
+  const pick=k=>rows.filter(r=>r.kind===k);
+  const img=r=>IMAGES[r.img_url]||r.img_url||"";
+  const n=v=>v>=1000000?(v/1000000).toFixed(1)+"M":v>=1000?Math.round(v/1000)+"K":String(v||0);
+  const live=pick("live");
+  return {
+    ...base,
+    shows: pick("show").map(r=>({id:r.id,title:r.title,host:r.host,category:r.category,subscribers:n(r.subscribers),episodes:r.episode_count,imgUrl:img(r),color:r.color,description:r.description})),
+    comedy: pick("comedy").map(r=>({id:r.id,name:r.title,specialty:r.category,subscribers:n(r.subscribers),episodes:r.episode_count,imgUrl:img(r),color:r.color,bio:r.description})),
+    interviews: pick("interview").map(r=>({id:r.id,guest:r.category,host:r.host,topic:r.title,views:n(r.subscribers),date:"",imgUrl:img(r),color:r.color,hot:false})),
+    highlights: live.length?live.map(r=>({id:r.id,title:r.title,host:r.host,description:r.description,category:r.category,imgUrl:img(r),badge:"LIVE",color:r.color,cta:"Watch Now",views:n(r.subscribers)+" watching"})):base.highlights,
+  };
+}
 function saveContent(c){ try{ store.set(SKEY,JSON.stringify(c)); }catch(_){} }
 
 // ─── ATOMS ───────────────────────────────────────────────────────────────────
@@ -638,17 +666,26 @@ function LiveScreen({content,onNavigate}){
 
 // ─── PODCASTS ─────────────────────────────────────────────────────────────────
 function PodcastsScreen({content}){
+    const [openShow,setOpenShow]=useState(null);
   const [soon,setSoon]=useState(null);
   const cats=["All",...new Set(content.shows.map(s=>s.category))];
   const [cat,setCat]=useState("All");
   const shown=cat==="All"?content.shows:content.shows.filter(s=>s.category===cat);
   return <div>
+      {openShow && (
+        <div style={{marginBottom:22,padding:20,borderRadius:18,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(175,200,240,0.16)"}}>
+          <button onClick={()=>setOpenShow(null)} style={{background:"none",border:"none",color:T.t2,fontSize:12,cursor:"pointer",marginBottom:12}}>? All shows</button>
+          <div style={{fontSize:18,fontWeight:800,color:T.t1}}>{openShow.title}</div>
+          <div style={{fontSize:12,color:T.t2,marginBottom:16}}>{openShow.host} � {openShow.category}</div>
+          <EpisodeList showId={openShow.id} T={T} onNeedUpload={()=>{}}/>
+        </div>
+      )}
     <ComingSoon topic={soon} onClose={()=>setSoon(null)} T={T}/>
     <div style={{display:"flex",gap:8,marginBottom:20,flexWrap:"wrap"}}>
       {cats.map(c=><button key={c} onClick={()=>setCat(c)} style={{background:cat===c?"rgba(127,166,240,.15)":"rgba(255,255,255,.04)",border:`1px solid ${cat===c?T.cyan:T.border}`,color:cat===c?T.cyan:T.t2,padding:"7px 15px",borderRadius:20,fontSize:11,fontWeight:700,cursor:"pointer"}}>{c}</button>)}
     </div>
     <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16}}>
-      {shown.map(p=><ShowCard key={p.id} item={p} onOpen={()=>setSoon("live")}/>)}
+      {shown.map(p=><ShowCard key={p.id} item={p} onOpen={()=>setOpenShow(p)}/>)}
     </div>
   </div>;
 }
@@ -3828,6 +3865,15 @@ function WelcomeModal({brand,onSelect}){
 // ─── ROOT ─────────────────────────────────────────────────────────────────────
 export default function PodChat(){
   const [content,setContent]=useState(loadContent);
+  // Catalogue comes from the API so ids match the database.
+  useEffect(()=>{
+    let dead=false;
+    fetch("https://podchat.wittyhub.co/api/shows")
+      .then(r=>r.ok?r.json():Promise.reject())
+      .then(rows=>{ if(!dead) setContent(prev=>rowsToContent(rows,prev)); })
+      .catch(()=>{});
+    return ()=>{dead=true;};
+  },[]);
   // Anything that looks clickable but has no handler of its own bubbles
   // up to here. Rather than a dead click, the person gets told what is
   // coming and pointed at something that does work.
@@ -3837,7 +3883,6 @@ export default function PodChat(){
     simulcast:"simulcast",analytics:"analytics",ai_studio:"ai",
     comedy_formats:"live",ownership:"ai"};
   const catchDead=(e)=>{
-    const el=e.target.closest("[data-live],a,input,textarea,select,label");
     if(el) return;
     let n=e.target, hops=0;
     while(n&&hops<4){

@@ -11,8 +11,8 @@
 import { useState, useRef, useEffect } from "react";
 
 const API_BASE = import.meta.env.VITE_API_BASE || "https://podchat.wittyhub.co";
-const CLOUD = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-const PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+const CLOUD = "vyebeeaa";
+const PRESET = "podchat_media";
 
 const token = () => { try { return localStorage.getItem("podchat_token"); } catch { return null; } };
 
