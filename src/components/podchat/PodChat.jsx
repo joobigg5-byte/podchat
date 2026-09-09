@@ -3904,13 +3904,13 @@ export default function PodChat(){
     simulcast:"simulcast",analytics:"analytics",ai_studio:"ai",
     comedy_formats:"live",ownership:"ai"};
   const catchDead=(e)=>{
+    const UNBUILT=["live","hotseat","translate","wallet","revenue","marketplace","simulcast","analytics","ai_studio","comedy_formats","ownership"];
+    if(!UNBUILT.includes(page)) return;
+    const el=e.target.closest("[data-live],a,input,textarea,select,label");
     if(el) return;
     let n=e.target, hops=0;
     while(n&&hops<4){
-      if(n.style&&n.style.cursor==="pointer"){
-        setSoon(SOON_BY_PAGE[page]||"live");
-        return;
-      }
+      if(n.style&&n.style.cursor==="pointer"){ setSoon(SOON_BY_PAGE[page]||"live"); return; }
       n=n.parentElement; hops++;
     }
   };
