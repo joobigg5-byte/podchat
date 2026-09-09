@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import ComingSoon from "./ComingSoon";
 import UploadEpisode from "./UploadEpisode";
 import EpisodeList from "./EpisodeList";
+import QuickPlay from "./QuickPlay";
 import studioDramatic from "@/assets/podchat/studio-dramatic.jpg";
 import studioTable from "@/assets/podchat/studio-table.jpg";
 import studioBlue from "@/assets/podchat/studio-blue.jpg";
@@ -428,7 +429,7 @@ function HeroStrip({highlights,onNavigate}){
             <div style={{fontSize:13,color:"rgba(255,255,255,.5)",fontWeight:600,marginBottom:8}}>{cur.host}</div>
             <p style={{fontSize:14,color:"rgba(255,255,255,.7)",lineHeight:1.7,marginBottom:20,maxWidth:460}}>{cur.description}</p>
             <div style={{display:"flex",gap:12,alignItems:"center"}}>
-              <Btn color={cur.color||T.cyan} filled onClick={()=>onNavigate("live")} style={{fontSize:13,padding:"12px 26px",borderRadius:12}}>▶ {cur.cta||"Watch Now"}</Btn>
+              <Btn color={cur.color||T.cyan} filled onClick={()=>setQuickShow(ch||i)} style={{fontSize:13,padding:"12px 26px",borderRadius:12}}>▶ {cur.cta||"Watch Now"}</Btn>
               <Btn onClick={()=>onNavigate("podcasts")} style={{fontSize:12,padding:"12px 20px",borderRadius:12}}>+ Follow</Btn>
               <span style={{fontSize:12,color:T.t3,marginLeft:8}}>👁 {cur.views}</span>
             </div>
@@ -500,7 +501,7 @@ function ShowCard({item,onOpen}){
       <div style={{fontSize:11,color:T.t2,marginBottom:10}}>{item.host||item.specialty}</div>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
         <span style={{fontSize:11,fontWeight:700,color:acc}}>{item.subscribers}</span>
-        <Btn small color={acc}>▶ Play</Btn>
+        <Btn onClick={(e)=>{e.stopPropagation();}} small color={acc}>▶ Play</Btn>
       </div>
     </div>
   </div>;
@@ -537,16 +538,16 @@ function MiniRow({img,title,sub,right,fallback=T.purple}){
 }
 
 // ─── HOME ─────────────────────────────────────────────────────────────────────
-function HomeScreen({content,setPage}){
+function HomeScreen({content,setPage,setQuickShow}){
   const [soon,setSoon]=useState(null);
   return <div>
     <ComingSoon topic={soon} onClose={()=>setSoon(null)} T={T}/>
     <HeroStrip highlights={content.highlights} onNavigate={setPage}/>
     <SecRow title="🎙 Top Podcasts" color={T.cyan} onMore={()=>setPage("podcasts")}>
-      {content.shows.slice(0,4).map(s=><ShowCard key={s.id} item={s} onOpen={()=>setSoon("live")}/>)}
+      {content.shows.slice(0,4).map(s=><ShowCard key={s.id} item={s} onOpen={()=>setQuickShow(s)}/>)}
     </SecRow>
     <SecRow title="😂 Comedy Hub" color={T.pink} onMore={()=>setPage("comedy")}>
-      {content.comedy.slice(0,4).map(c=><PersonCard key={c.id} item={c} onOpen={()=>setSoon("live")}/>)}
+      {content.comedy.slice(0,4).map(c=><PersonCard key={c.id} item={c} onOpen={()=>setQuickShow(c)}/>)}
     </SecRow>
     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,marginBottom:28}}>
       <GPanel title="🔥 Hot Trends" color={T.orange} onMore={()=>setPage("trending")}>
@@ -621,6 +622,7 @@ function LiveScreen({content,onNavigate}){
             <Btn color={T.purple} onClick={()=>setSoon("ai")}>✂ Clip</Btn>
             <Btn color={T.t2}>↗ Share</Btn>
           </div>
+          <div style={{marginTop:18}}><EpisodeList showId={s.id} T={T} onNeedUpload={()=>{}}/></div>
         </div>
         <div style={{background:T.panel,border:"1px solid rgba(175,200,240,0.16)",boxShadow:"0 18px 44px rgba(6,10,18,0.5), inset 0 1px 0 rgba(255,255,255,0.14)",borderRadius:20,display:"flex",flexDirection:"column",height:440,backdropFilter:"blur(20px)"}}>
           <div style={{padding:"13px 16px",borderBottom:"1px solid rgba(255,255,255,0.08)",fontSize:12,fontWeight:700}}>💬 Live Chat</div>
@@ -665,7 +667,7 @@ function LiveScreen({content,onNavigate}){
 }
 
 // ─── PODCASTS ─────────────────────────────────────────────────────────────────
-function PodcastsScreen({content}){
+function PodcastsScreen({content,setQuickShow}){
     const [openShow,setOpenShow]=useState(null);
   const [soon,setSoon]=useState(null);
   const cats=["All",...new Set(content.shows.map(s=>s.category))];
@@ -674,7 +676,7 @@ function PodcastsScreen({content}){
   return <div>
       {openShow && (
         <div style={{marginBottom:22,padding:20,borderRadius:18,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(175,200,240,0.16)"}}>
-          <button onClick={()=>setOpenShow(null)} style={{background:"none",border:"none",color:T.t2,fontSize:12,cursor:"pointer",marginBottom:12}}>? All shows</button>
+          <button onClick={()=>setQuickShow(null)} style={{background:"none",border:"none",color:T.t2,fontSize:12,cursor:"pointer",marginBottom:12}}>? All shows</button>
           <div style={{fontSize:18,fontWeight:800,color:T.t1}}>{openShow.title}</div>
           <div style={{fontSize:12,color:T.t2,marginBottom:16}}>{openShow.host} � {openShow.category}</div>
           <EpisodeList showId={openShow.id} T={T} onNeedUpload={()=>{}}/>
@@ -685,15 +687,24 @@ function PodcastsScreen({content}){
       {cats.map(c=><button key={c} onClick={()=>setCat(c)} style={{background:cat===c?"rgba(127,166,240,.15)":"rgba(255,255,255,.04)",border:`1px solid ${cat===c?T.cyan:T.border}`,color:cat===c?T.cyan:T.t2,padding:"7px 15px",borderRadius:20,fontSize:11,fontWeight:700,cursor:"pointer"}}>{c}</button>)}
     </div>
     <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16}}>
-      {shown.map(p=><ShowCard key={p.id} item={p} onOpen={()=>setOpenShow(p)}/>)}
+      {shown.map(p=><ShowCard key={p.id} item={p} onOpen={()=>setQuickShow(p)}/>)}
     </div>
   </div>;
 }
 
 // ─── COMEDY ───────────────────────────────────────────────────────────────────
-function ComedyScreen({content}){
+function ComedyScreen({content,setQuickShow}){
+    const [openShow,setOpenShow]=useState(null);
   const [soon,setSoon]=useState(null);
   return <div>
+      {openShow && (
+        <div style={{marginBottom:22,padding:20,borderRadius:18,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(175,200,240,0.16)"}}>
+          <button onClick={()=>setQuickShow(null)} style={{background:"none",border:"none",color:T.t2,fontSize:12,cursor:"pointer",marginBottom:12}}>? Back</button>
+          <div style={{fontSize:18,fontWeight:800,color:T.t1}}>{openShow.title||openShow.name||openShow.topic}</div>
+          <div style={{fontSize:12,color:T.t2,marginBottom:16}}>{openShow.host||openShow.specialty}</div>
+          <EpisodeList showId={openShow.id} T={T} onNeedUpload={()=>{}}/>
+        </div>
+      )}
       <ComingSoon topic={soon} onClose={()=>setSoon(null)} T={T}/>
     <div style={{borderRadius:22,overflow:"hidden",height:240,position:"relative",marginBottom:24}}>
       <ImgFallback src={IMG_COMEDY_NIGHT} alt="comedy" style={{filter:"brightness(.4)"}}/>
@@ -706,7 +717,7 @@ function ComedyScreen({content}){
     </div>
     <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16}}>
       {content.comedy.map(ch=>(
-        <div key={ch.id} style={{borderRadius:20,overflow:"hidden",border:"1px solid rgba(175,200,240,0.16)",boxShadow:"0 18px 44px rgba(6,10,18,0.5), inset 0 1px 0 rgba(255,255,255,0.14)",background:T.panel,backdropFilter:"blur(24px) saturate(180%)",cursor:"pointer",transition:"all .3s"}}
+        <div key={ch.id} onClick={()=>setQuickShow(ch)} style={{borderRadius:20,overflow:"hidden",border:"1px solid rgba(175,200,240,0.16)",boxShadow:"0 18px 44px rgba(6,10,18,0.5), inset 0 1px 0 rgba(255,255,255,0.14)",background:T.panel,backdropFilter:"blur(24px) saturate(180%)",cursor:"pointer",transition:"all .3s"}}
           onMouseEnter={e=>{e.currentTarget.style.border=`1px solid ${ch.color}55`;e.currentTarget.style.transform="translateY(-4px)";}}
           onMouseLeave={e=>{e.currentTarget.style.border=`1px solid ${T.border}`;e.currentTarget.style.transform="none";}}>
           <div style={{height:165,overflow:"hidden",position:"relative"}}>
@@ -722,7 +733,7 @@ function ComedyScreen({content}){
                 <div><div style={{fontSize:13,fontWeight:800,color:T.t1}}>{ch.subscribers}</div><div style={{fontSize:9,color:T.t3}}>SUBS</div></div>
                 <div><div style={{fontSize:13,fontWeight:800,color:T.t1}}>{ch.episodes}</div><div style={{fontSize:9,color:T.t3}}>EPS</div></div>
               </div>
-              <Btn small color={ch.color} filled onClick={(e)=>{e.stopPropagation();onOpen&&onOpen();}}>Watch →</Btn>
+              <Btn small color={ch.color} filled onClick={()=>setQuickShow(ch)}>Watch →</Btn>
             </div>
           </div>
         </div>
@@ -732,14 +743,23 @@ function ComedyScreen({content}){
 }
 
 // ─── INTERVIEWS ───────────────────────────────────────────────────────────────
-function InterviewsScreen({content}){
+function InterviewsScreen({content,setQuickShow}){
+    const [openShow,setOpenShow]=useState(null);
   const [soon,setSoon]=useState(null);
   return <div>
+      {openShow && (
+        <div style={{marginBottom:22,padding:20,borderRadius:18,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(175,200,240,0.16)"}}>
+          <button onClick={()=>setQuickShow(null)} style={{background:"none",border:"none",color:T.t2,fontSize:12,cursor:"pointer",marginBottom:12}}>? Back</button>
+          <div style={{fontSize:18,fontWeight:800,color:T.t1}}>{openShow.title||openShow.name||openShow.topic}</div>
+          <div style={{fontSize:12,color:T.t2,marginBottom:16}}>{openShow.host||openShow.specialty}</div>
+          <EpisodeList showId={openShow.id} T={T} onNeedUpload={()=>{}}/>
+        </div>
+      )}
       <ComingSoon topic={soon} onClose={()=>setSoon(null)} T={T}/>
     <div style={{fontSize:11,fontWeight:700,letterSpacing:3,textTransform:"uppercase",color:T.t2,marginBottom:18}}>◈ Featured Interviews</div>
     <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:16}}>
       {content.interviews.map(i=>(
-        <div key={i.id} style={{borderRadius:20,overflow:"hidden",border:"1px solid rgba(175,200,240,0.16)",boxShadow:"0 18px 44px rgba(6,10,18,0.5), inset 0 1px 0 rgba(255,255,255,0.14)",background:T.panel,backdropFilter:"blur(24px) saturate(180%)",display:"flex",cursor:"pointer",transition:"all .25s"}}
+        <div key={i.id} onClick={()=>setQuickShow(i)} style={{borderRadius:20,overflow:"hidden",border:"1px solid rgba(175,200,240,0.16)",boxShadow:"0 18px 44px rgba(6,10,18,0.5), inset 0 1px 0 rgba(255,255,255,0.14)",background:T.panel,backdropFilter:"blur(24px) saturate(180%)",display:"flex",cursor:"pointer",transition:"all .25s"}}
           onMouseEnter={e=>{e.currentTarget.style.border=`1px solid ${i.color||T.purple}50`;e.currentTarget.style.transform="translateY(-2px)";}}
           onMouseLeave={e=>{e.currentTarget.style.border=`1px solid ${T.border}`;e.currentTarget.style.transform="none";}}>
           <div style={{width:130,flexShrink:0,overflow:"hidden"}}>
@@ -754,7 +774,7 @@ function InterviewsScreen({content}){
             <div style={{fontSize:11,color:T.t2,marginBottom:4}}>with {i.host}</div>
             <div style={{fontSize:12,color:i.color||T.purple,fontWeight:600,marginBottom:14}}>{i.topic}</div>
             <div style={{display:"flex",gap:10,alignItems:"center"}}>
-              <Btn small color={i.color||T.purple} filled onClick={(e)=>{e.stopPropagation();onOpen&&onOpen();}}>▶ Watch</Btn>
+              <Btn small color={i.color||T.purple} filled onClick={()=>setQuickShow(ch)}>▶ Watch</Btn>
               <span style={{fontSize:12,color:T.gold,fontWeight:700}}>👁 {i.views}</span>
             </div>
           </div>
@@ -765,7 +785,7 @@ function InterviewsScreen({content}){
 }
 
 // ─── TRENDING ─────────────────────────────────────────────────────────────────
-function TrendingScreen({content}){
+function TrendingScreen({content,setQuickShow}){
   return <div>
     <div style={{borderRadius:22,overflow:"hidden",height:200,position:"relative",marginBottom:24}}>
       <ImgFallback src={IMG_STUDIO_DRAMATIC} alt="trending" style={{filter:"brightness(.4)"}}/>
@@ -777,7 +797,7 @@ function TrendingScreen({content}){
     </div>
     <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:14}}>
       {content.trending.map(t=>(
-        <div key={t.id} style={{borderRadius:18,overflow:"hidden",border:"1px solid rgba(175,200,240,0.16)",boxShadow:"0 18px 44px rgba(6,10,18,0.5), inset 0 1px 0 rgba(255,255,255,0.14)",background:T.panel,backdropFilter:"blur(24px) saturate(180%)",display:"flex",cursor:"pointer",transition:"all .25s"}}
+        <div onClick={()=>setQuickShow(t)} key={t.id} style={{borderRadius:18,overflow:"hidden",border:"1px solid rgba(175,200,240,0.16)",boxShadow:"0 18px 44px rgba(6,10,18,0.5), inset 0 1px 0 rgba(255,255,255,0.14)",background:T.panel,backdropFilter:"blur(24px) saturate(180%)",display:"flex",cursor:"pointer",transition:"all .25s"}}
           onMouseEnter={e=>{e.currentTarget.style.border=`1px solid ${t.color}50`;e.currentTarget.style.transform="translateY(-2px)";}}
           onMouseLeave={e=>{e.currentTarget.style.border=`1px solid ${T.border}`;e.currentTarget.style.transform="none";}}>
           <div style={{width:110,flexShrink:0,overflow:"hidden"}}>
@@ -829,8 +849,8 @@ function HustleScreen({content}){
             </div>
           ))}
           <div style={{display:"flex",gap:10,marginTop:16}}>
-            <Btn color={h.color} filled onClick={()=>setSoon("marketplace")}>🚀 Start This Hustle</Btn>
-            <Btn color={T.gold} onClick={()=>setSoon("marketplace")}>💰 Find Brands</Btn>
+            <Btn color={h.color} filled onClick={()=>window.open("https://www.fiverr.com","_blank","noopener")}>🚀 Start This Hustle</Btn>
+            <Btn color={T.gold} onClick={()=>window.open("https://www.joinbrands.com","_blank","noopener")}>💰 Find Brands</Btn>
           </div>
         </div>
       </div>
@@ -2192,7 +2212,7 @@ function HotSeatScreen(){
           <div style={{fontSize:11,color:T.t2,marginBottom:16}}>{queue.length} people waiting to join</div>
           <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:16}}>
             {queue.map((u,i)=>(
-              <div key={u.id} style={{background:u.isYou?`${T.cyan}08`:"rgba(255,255,255,.02)",
+              <div onClick={()=>setQuickShow(u)} key={u.id} style={{background:u.isYou?`${T.cyan}08`:"rgba(255,255,255,.02)",
                 border:`1px solid ${u.isYou?T.cyan+"40":T.border}`,borderRadius:12,padding:"10px 12px"}}>
                 <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
                   <div style={{width:28,height:28,borderRadius:"50%",
@@ -2736,7 +2756,7 @@ function SimulcastScreen(){
             <div style={{fontSize:13,fontWeight:700,color:T.t1,marginBottom:16}}>Select Platforms to Stream To</div>
             <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:20}}>
               {PLATS.map(p=>(
-                <div key={p.id} style={{display:"flex",alignItems:"center",gap:12,padding:"14px 16px",
+                <div onClick={()=>setQuickShow(p)} key={p.id} style={{display:"flex",alignItems:"center",gap:12,padding:"14px 16px",
                   background:`${p.color}08`,border:`1px solid ${platforms[p.id]?p.color+"50":T.border}`,
                   borderRadius:14,transition:"all .2s",cursor:p.id==="podchat"?"default":"pointer"}}
                   onClick={()=>p.id!=="podchat"&&setPlatforms(ps=>({...ps,[p.id]:!ps[p.id]}))}>
@@ -2788,7 +2808,7 @@ function SimulcastScreen(){
             <div style={{fontSize:36,fontWeight:900,color:T.purple,marginBottom:4}}>{totalReach}M+</div>
             <div style={{fontSize:11,color:T.t2,marginBottom:16}}>potential listeners across all platforms</div>
             {PLATS.filter(p=>platforms[p.id]).map(p=>(
-              <div key={p.id} style={{display:"flex",justifyContent:"space-between",
+              <div onClick={()=>setQuickShow(p)} key={p.id} style={{display:"flex",justifyContent:"space-between",
                 padding:"8px 0",borderBottom:"1px solid rgba(255,255,255,0.08)"}}>
                 <span style={{fontSize:11,color:T.t1}}>{p.icon} {p.name}</span>
                 <span style={{fontSize:11,fontWeight:700,color:p.color}}>
@@ -3439,7 +3459,7 @@ function AudioPlayerBar({track,onClose}){
 
       <style>{`@keyframes pcReactRise{0%{transform:translateY(0) scale(1);opacity:1}70%{opacity:.85}100%{transform:translateY(-62px) scale(1.25);opacity:0}}`}</style>
       {floats.map(f=>(
-        <div key={f.id} style={{position:"absolute",bottom:16,left:`${f.x}%`,fontSize:20,animation:"pcReactRise 1.25s ease-out forwards",pointerEvents:"none",zIndex:5}}>{f.emoji}</div>
+        <div onClick={()=>setQuickShow(f)} key={f.id} style={{position:"absolute",bottom:16,left:`${f.x}%`,fontSize:20,animation:"pcReactRise 1.25s ease-out forwards",pointerEvents:"none",zIndex:5}}>{f.emoji}</div>
       ))}
 
       {/* Track info */}
@@ -3865,6 +3885,7 @@ function WelcomeModal({brand,onSelect}){
 // ─── ROOT ─────────────────────────────────────────────────────────────────────
 export default function PodChat(){
   const [content,setContent]=useState(loadContent);
+  const [quickShow,setQuickShow]=useState(null);
   // Catalogue comes from the API so ids match the database.
   useEffect(()=>{
     let dead=false;
@@ -3913,13 +3934,13 @@ export default function PodChat(){
   const TITLES={home:"Home",live:"Live Now",trending:"Hot Trends",hustle:"Side Hustles",podcasts:"Podcasts",comedy:"Comedy Hub",interviews:"Interviews",studio:"My Studio",ai_studio:"AI Studio",wallet:"PodCoins Wallet",cms:"Content Manager",translate:"AI Translation",hotseat:"Live Hot Seat",analytics:"Creator Analytics",marketplace:"Guest & Brand Marketplace",comedy_formats:"Comedy Formats",simulcast:"Simulcast HQ",revenue:"Revenue Dashboard",ownership:"Content Ownership"};
 
   const SCREENS={
-    home:       <HomeScreen content={content} setPage={setPage}/>,
+    home:       <HomeScreen setQuickShow={setQuickShow} content={content} setPage={setPage}/>,
     live:       <LiveScreen content={content} onNavigate={setPage}/>,
-    trending:   <TrendingScreen content={content}/>,
+    trending:   <TrendingScreen setQuickShow={setQuickShow} content={content}/>,
     hustle:     <HustleScreen content={content}/>,
-    podcasts:   <PodcastsScreen content={content}/>,
-    comedy:     <ComedyScreen content={content}/>,
-    interviews: <InterviewsScreen content={content}/>,
+    podcasts:   <PodcastsScreen setQuickShow={setQuickShow} content={content}/>,
+    comedy:     <ComedyScreen setQuickShow={setQuickShow} content={content}/>,
+    interviews: <InterviewsScreen setQuickShow={setQuickShow} content={content}/>,
     studio:     <StudioScreen/>,
     ai_studio:  <AIStudioScreen shows={content.shows}/>,
     wallet:     <WalletScreen podCoins={coins} setPodCoins={setCoins}/>,
@@ -3941,6 +3962,7 @@ export default function PodChat(){
   const playTrack=(item)=>setAudioTrack({title:item.title||item.name,host:item.host||item.specialty||"PodChat",color:item.color||T.cyan});
 
   return <div onClick={catchDead} style={{minHeight:"100vh",background:"radial-gradient(ellipse at 12% -10%, #1a2438 0%, #121a29 42%, #0B111B 100%)",fontFamily:"'Manrope', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif",color:T.t1,display:"flex",position:"relative",overflow:"hidden"}}>
+      <QuickPlay show={quickShow} onClose={()=>setQuickShow(null)} T={T} onGoStudio={()=>setPage("studio")}/>
       <ComingSoon topic={soon} onClose={()=>setSoon(null)} onNavigate={setPage} T={T}/>
     {!user&&<AuthScreen onAuth={(u)=>{setUser(u);if(!profile)setProfile(u.type);}}/>}
       {user&&!profile&&<WelcomeModal brand={content.brand} onSelect={setProfile}/>}
