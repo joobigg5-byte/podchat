@@ -187,6 +187,24 @@ function rowsToContent(rows, base){
 function saveContent(c){ try{ store.set(SKEY,JSON.stringify(c)); }catch(_){} }
 
 // ─── ATOMS ───────────────────────────────────────────────────────────────────
+let __isMobile = false;
+if (typeof window !== "undefined") {
+  const sync = () => { __isMobile = window.innerWidth <= 760; };
+  sync();
+  window.addEventListener("resize", sync);
+}
+
+function useIsMobile(bp=760){
+  const [m,setM]=useState(false);
+  useEffect(()=>{
+    const q=window.matchMedia(`(max-width:${bp}px)`);
+    const on=()=>setM(q.matches);
+    on(); q.addEventListener("change",on);
+    return ()=>q.removeEventListener("change",on);
+  },[bp]);
+  return m;
+}
+
 function Orb({x,y,color,size=500,opacity=0.12}){
   return <div style={{position:"fixed",left:x,top:y,width:size,height:size,
     borderRadius:"50%",
@@ -569,7 +587,7 @@ function SecRow({title,color,onMore,children}){
       </div>
       <Btn small color={color} onClick={onMore}>See All →</Btn>
     </div>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:14}}>{children}</div>
+    <div style={{display:"grid",gridTemplateColumns:__isMobile?"1fr":"repeat(4,1fr)",gap:14}}>{children}</div>
   </div>;
 }
 
@@ -601,7 +619,7 @@ function LiveScreen({content,onNavigate}){
     return <div>
       <ComingSoon topic={soon} onClose={()=>setSoon(null)} onNavigate={onNavigate} T={T}/>
       <Btn small onClick={()=>setSel(null)}>← All Live</Btn>
-      <div style={{marginTop:18,display:"grid",gridTemplateColumns:"1fr 320px",gap:20}}>
+      <div style={{marginTop:18,display:"grid",gridTemplateColumns:__isMobile?"1fr":"1fr 320px",gap:20}}>
         <div>
           <div style={{borderRadius:20,overflow:"hidden",position:"relative",aspectRatio:"16/9",marginBottom:14}}>
             <ImgFallback src={s.imgUrl} alt={s.title} style={{filter:"brightness(.45)"}} fallback={s.color||T.purple}/>
@@ -626,7 +644,7 @@ function LiveScreen({content,onNavigate}){
         </div>
         <div style={{background:T.panel,border:"1px solid rgba(175,200,240,0.16)",boxShadow:"0 18px 44px rgba(6,10,18,0.5), inset 0 1px 0 rgba(255,255,255,0.14)",borderRadius:20,display:"flex",flexDirection:"column",height:440,backdropFilter:"blur(20px)"}}>
           <div style={{padding:"13px 16px",borderBottom:"1px solid rgba(255,255,255,0.08)",fontSize:12,fontWeight:700}}>💬 Live Chat</div>
-          <div style={{flex:1,overflowY:"auto",padding:"10px 14px",display:"flex",flexDirection:"column",gap:8}}>
+          <div style={{flex:1,paddingBottom:__isMobile?90:undefined,overflowY:"auto",padding:"10px 14px",display:"flex",flexDirection:"column",gap:8}}>
             {log.map((m,i)=><div key={i}><span style={{fontSize:11,fontWeight:700,color:m.c}}>{m.u} </span><span style={{fontSize:11,color:T.t2}}>{m.m}</span></div>)}
           </div>
           <div style={{padding:"10px 12px",borderTop:"1px solid rgba(255,255,255,0.08)",display:"flex",gap:8}}>
@@ -643,7 +661,7 @@ function LiveScreen({content,onNavigate}){
       <Pill label="LIVE NOW" color={T.pink} pulse/>
       <span style={{fontSize:12,color:T.t2}}>14 Active Broadcasts</span>
     </div>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16}}>
+    <div style={{display:"grid",gridTemplateColumns:__isMobile?"1fr":"repeat(3,1fr)",gap:16}}>
       {content.highlights.map(s=>(
         <div key={s.id} onClick={()=>setSel(s.id)}
           style={{borderRadius:20,overflow:"hidden",cursor:"pointer",height:250,position:"relative",transition:"all .3s"}}
@@ -686,7 +704,7 @@ function PodcastsScreen({content,setQuickShow}){
     <div style={{display:"flex",gap:8,marginBottom:20,flexWrap:"wrap"}}>
       {cats.map(c=><button key={c} onClick={()=>setCat(c)} style={{background:cat===c?"rgba(127,166,240,.15)":"rgba(255,255,255,.04)",border:`1px solid ${cat===c?T.cyan:T.border}`,color:cat===c?T.cyan:T.t2,padding:"7px 15px",borderRadius:20,fontSize:11,fontWeight:700,cursor:"pointer"}}>{c}</button>)}
     </div>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16}}>
+    <div style={{display:"grid",gridTemplateColumns:__isMobile?"1fr":"repeat(3,1fr)",gap:16}}>
       {shown.map(p=><ShowCard key={p.id} item={p} onOpen={()=>setQuickShow(p)}/>)}
     </div>
   </div>;
@@ -715,7 +733,7 @@ function ComedyScreen({content,setQuickShow}){
         <div style={{fontSize:13,color:"rgba(255,255,255,.6)",marginTop:6}}>Stand-up · Roasts · Open Mics · Sketches · Talk Shows · Pod Wars</div>
       </div>
     </div>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16}}>
+    <div style={{display:"grid",gridTemplateColumns:__isMobile?"1fr":"repeat(3,1fr)",gap:16}}>
       {content.comedy.map(ch=>(
         <div key={ch.id} onClick={()=>setQuickShow(ch)} style={{borderRadius:20,overflow:"hidden",border:"1px solid rgba(175,200,240,0.16)",boxShadow:"0 18px 44px rgba(6,10,18,0.5), inset 0 1px 0 rgba(255,255,255,0.14)",background:T.panel,backdropFilter:"blur(24px) saturate(180%)",cursor:"pointer",transition:"all .3s"}}
           onMouseEnter={e=>{e.currentTarget.style.border=`1px solid ${ch.color}55`;e.currentTarget.style.transform="translateY(-4px)";}}
@@ -757,7 +775,7 @@ function InterviewsScreen({content,setQuickShow}){
       )}
       <ComingSoon topic={soon} onClose={()=>setSoon(null)} T={T}/>
     <div style={{fontSize:11,fontWeight:700,letterSpacing:3,textTransform:"uppercase",color:T.t2,marginBottom:18}}>◈ Featured Interviews</div>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:16}}>
+    <div style={{display:"grid",gridTemplateColumns:__isMobile?"1fr":"repeat(2,1fr)",gap:16}}>
       {content.interviews.map(i=>(
         <div key={i.id} onClick={()=>setQuickShow(i)} style={{borderRadius:20,overflow:"hidden",border:"1px solid rgba(175,200,240,0.16)",boxShadow:"0 18px 44px rgba(6,10,18,0.5), inset 0 1px 0 rgba(255,255,255,0.14)",background:T.panel,backdropFilter:"blur(24px) saturate(180%)",display:"flex",cursor:"pointer",transition:"all .25s"}}
           onMouseEnter={e=>{e.currentTarget.style.border=`1px solid ${i.color||T.purple}50`;e.currentTarget.style.transform="translateY(-2px)";}}
@@ -795,7 +813,7 @@ function TrendingScreen({content,setQuickShow}){
         <div style={{fontSize:26,fontWeight:900,color:T.t1,letterSpacing:-1}}>What's Exploding Right Now</div>
       </div>
     </div>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:14}}>
+    <div style={{display:"grid",gridTemplateColumns:__isMobile?"1fr":"repeat(2,1fr)",gap:14}}>
       {content.trending.map(t=>(
         <div onClick={()=>setQuickShow(t)} key={t.id} style={{borderRadius:18,overflow:"hidden",border:"1px solid rgba(175,200,240,0.16)",boxShadow:"0 18px 44px rgba(6,10,18,0.5), inset 0 1px 0 rgba(255,255,255,0.14)",background:T.panel,backdropFilter:"blur(24px) saturate(180%)",display:"flex",cursor:"pointer",transition:"all .25s"}}
           onMouseEnter={e=>{e.currentTarget.style.border=`1px solid ${t.color}50`;e.currentTarget.style.transform="translateY(-2px)";}}
@@ -876,7 +894,7 @@ function HustleScreen({content}){
         <div style={{fontSize:26,fontWeight:900,color:T.t1,letterSpacing:-1}}>Turn Your Voice Into Income</div>
       </div>
     </div>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:16}}>
+    <div style={{display:"grid",gridTemplateColumns:__isMobile?"1fr":"repeat(2,1fr)",gap:16}}>
       {content.hustles.map(h=>(
         <div key={h.id} onClick={()=>setSel(h.id)} style={{borderRadius:18,overflow:"hidden",border:"1px solid rgba(175,200,240,0.16)",boxShadow:"0 18px 44px rgba(6,10,18,0.5), inset 0 1px 0 rgba(255,255,255,0.14)",background:T.panel,backdropFilter:"blur(24px) saturate(180%)",display:"flex",cursor:"pointer",transition:"all .25s"}}
           onMouseEnter={e=>{e.currentTarget.style.border=`1px solid ${h.color}50`;e.currentTarget.style.transform="translateY(-2px)";}}
@@ -924,7 +942,7 @@ function StudioScreen(){
             </button>
             <button style={{flex:1,padding:"13px",background:`linear-gradient(135deg,${T.pink},${T.orange})`,border:"none",borderRadius:12,color:"#fff",fontSize:13,fontWeight:900,cursor:"pointer"}}>◉ Go Live Now</button>
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8}}>
+          <div style={{display:"grid",gridTemplateColumns:__isMobile?"1fr":"repeat(4,1fr)",gap:8}}>
             {[["🎙","Mic","Connected",T.green],["📷","Camera","Ready",T.cyan],["🎵","BGM","Off",T.t3],["🤖","AI Notes","On",T.purple]].map(([e,l,s,c])=>(
               <div key={l} style={{background:T.glass,border:"1px solid rgba(175,200,240,0.16)",boxShadow:"0 18px 44px rgba(6,10,18,0.5), inset 0 1px 0 rgba(255,255,255,0.14)",borderRadius:10,padding:10,textAlign:"center"}}>
                 <div style={{fontSize:16,marginBottom:3}}>{e}</div>
@@ -1134,7 +1152,7 @@ function CMSScreen({content,setContent}){
       {/* ── DASHBOARD ── */}
       {tab==="dashboard" && (
         <div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:14,marginBottom:24}}>
+          <div style={{display:"grid",gridTemplateColumns:__isMobile?"1fr":"repeat(3,1fr)",gap:14,marginBottom:24}}>
             {stats.map(s=>(
               <div key={s.label} style={{background:T.panel,border:`1px solid ${s.color}25`,
                 borderRadius:16,padding:"18px 20px",backdropFilter:"blur(24px) saturate(180%)",
@@ -1153,7 +1171,7 @@ function CMSScreen({content,setContent}){
           <div style={{background:T.panel,border:"1px solid rgba(175,200,240,0.16)",boxShadow:"0 18px 44px rgba(6,10,18,0.5), inset 0 1px 0 rgba(255,255,255,0.14)",borderRadius:20,
             padding:22,backdropFilter:"blur(24px) saturate(180%)",marginBottom:20}}>
             <div style={{fontSize:13,fontWeight:700,color:T.t1,marginBottom:16}}>⚡ Quick Actions</div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
+            <div style={{display:"grid",gridTemplateColumns:__isMobile?"1fr":"repeat(4,1fr)",gap:12}}>
               {[
                 {label:"Add Podcast",    icon:"🎙",color:T.cyan,   go:"shows"},
                 {label:"Add Comedy Ch.", icon:"😂",color:T.pink,   go:"comedy"},
@@ -2006,13 +2024,13 @@ function TranslationScreen(){
         )}
       </div>
 
-      <div style={{display:"grid",gridTemplateColumns:"1fr 320px",gap:20}}>
+      <div style={{display:"grid",gridTemplateColumns:__isMobile?"1fr":"1fr 320px",gap:20}}>
         <div>
           {/* Language grid */}
           <div style={{background:T.panel,border:"1px solid rgba(175,200,240,0.16)",boxShadow:"0 18px 44px rgba(6,10,18,0.5), inset 0 1px 0 rgba(255,255,255,0.14)",borderRadius:20,padding:22,
             backdropFilter:"blur(24px) saturate(180%)",marginBottom:16}}>
             <div style={{fontSize:13,fontWeight:700,color:T.t1,marginBottom:16}}>Select Language to Dub</div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:18}}>
+            <div style={{display:"grid",gridTemplateColumns:__isMobile?"1fr":"repeat(4,1fr)",gap:10,marginBottom:18}}>
               {LANGS.map(l=>{
                 const isDone=dubbed.includes(l.code);
                 const isSel=selLang===l.code;
@@ -2054,7 +2072,7 @@ function TranslationScreen(){
             {/* AI voice persona picker */}
             <div style={{marginBottom:16}}>
               <div style={{fontSize:12,fontWeight:700,color:T.t1,marginBottom:10}}>AI Voice Persona</div>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10}}>
+              <div style={{display:"grid",gridTemplateColumns:__isMobile?"1fr":"repeat(3,1fr)",gap:10}}>
                 {DUB_VOICES.map(v=>{
                   const sel=selVoice===v.id;
                   return(
@@ -2085,7 +2103,7 @@ function TranslationScreen(){
           {/* How it works */}
           <div style={{background:T.panel,border:"1px solid rgba(175,200,240,0.16)",boxShadow:"0 18px 44px rgba(6,10,18,0.5), inset 0 1px 0 rgba(255,255,255,0.14)",borderRadius:20,padding:22,backdropFilter:"blur(24px) saturate(180%)"}}>
             <div style={{fontSize:13,fontWeight:700,color:T.t1,marginBottom:14}}>How AI Dubbing Works</div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
+            <div style={{display:"grid",gridTemplateColumns:__isMobile?"1fr":"repeat(4,1fr)",gap:12}}>
               {[
                 {step:"1",title:"Voice Analysis",desc:"AI analyses your vocal patterns, tone and rhythm",icon:"🎙",color:T.cyan},
                 {step:"2",title:"Voice Clone",desc:"Creates a digital clone that sounds exactly like you",icon:"🤖",color:T.purple},
@@ -2523,7 +2541,7 @@ function MarketplaceScreen(){
         </div>
       </div>
 
-      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:14}}>
+      <div style={{display:"grid",gridTemplateColumns:__isMobile?"1fr":"repeat(3,1fr)",gap:14}}>
         {items.map(item=>{
           const isApplied=applied.includes(item.id);
           return(
@@ -3449,7 +3467,7 @@ function AudioPlayerBar({track,onClose}){
   const fmt=s=>`${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
 
   return(
-    <div style={{position:"fixed",bottom:0,left:72,right:0,height:84,zIndex:150,
+    <div style={{position:"fixed",bottom:0,left:__isMobile?0:72,right:0,height:84,zIndex:150,
       background:"rgba(255,255,255,0.06)",
       backdropFilter:"blur(40px) saturate(200%)",
       borderTop:"1px solid rgba(255,255,255,0.16)",
@@ -3618,7 +3636,7 @@ function PasteWinScreen({user}){
 
       {/* LEADERBOARD */}
       {(tab==="weekly"||tab==="monthly")&&(
-        <div style={{display:"grid",gridTemplateColumns:"1fr 320px",gap:20}}>
+        <div style={{display:"grid",gridTemplateColumns:__isMobile?"1fr":"1fr 320px",gap:20}}>
           <div>
             <div style={{background:T.panel,border:"1px solid rgba(175,200,240,0.16)",boxShadow:"0 18px 44px rgba(6,10,18,0.5), inset 0 1px 0 rgba(255,255,255,0.14)",borderRadius:20,
               padding:22,backdropFilter:"blur(24px) saturate(180%)"}}>
@@ -3730,7 +3748,7 @@ function PasteWinScreen({user}){
 
       {/* SUBMIT */}
       {tab==="submit"&&(
-        <div style={{display:"grid",gridTemplateColumns:"1fr 320px",gap:20}}>
+        <div style={{display:"grid",gridTemplateColumns:__isMobile?"1fr":"1fr 320px",gap:20}}>
           <div style={{background:T.panel,border:"1px solid rgba(175,200,240,0.16)",boxShadow:"0 18px 44px rgba(6,10,18,0.5), inset 0 1px 0 rgba(255,255,255,0.14)",borderRadius:20,
             padding:24,backdropFilter:"blur(24px) saturate(180%)"}}>
             <div style={{fontSize:14,fontWeight:700,color:T.t1,marginBottom:18}}>
@@ -3886,6 +3904,7 @@ function WelcomeModal({brand,onSelect}){
 export default function PodChat(){
   const [content,setContent]=useState(loadContent);
   const [quickShow,setQuickShow]=useState(null);
+  const isMobile=useIsMobile();
   // Catalogue comes from the API so ids match the database.
   useEffect(()=>{
     let dead=false;
@@ -3976,7 +3995,7 @@ export default function PodChat(){
     <Orb x="50%"  y="40%"  color="#8FA8DE" size={350}  opacity={0.06}/>
 
     {/* SIDEBAR */}
-    <div style={{width:72,background:"rgba(255,255,255,0.05)",backdropFilter:"blur(40px) saturate(180%)",borderRight:"1px solid rgba(255,255,255,0.12)",boxShadow:"4px 0 24px rgba(0,0,0,0.4), inset -1px 0 0 rgba(255,255,255,0.08)",display:"flex",flexDirection:"column",alignItems:"center",padding:"16px 0",gap:2,position:"fixed",left:0,top:0,bottom:0,backdropFilter:"blur(30px)",zIndex:100,overflowY:"auto",scrollbarWidth:"none",msOverflowStyle:"none"}}>
+    <div style={{...(__isMobile?{width:"100%",height:64,flexDirection:"row",top:"auto",bottom:0,right:0,padding:"0 8px",overflowX:"auto",overflowY:"hidden",borderRight:"none",borderTop:"1px solid rgba(255,255,255,0.12)"}:{}),width:72,background:"rgba(255,255,255,0.05)",backdropFilter:"blur(40px) saturate(180%)",borderRight:"1px solid rgba(255,255,255,0.12)",boxShadow:"4px 0 24px rgba(0,0,0,0.4), inset -1px 0 0 rgba(255,255,255,0.08)",display:"flex",flexDirection:"column",alignItems:"center",padding:"16px 0",gap:2,position:"fixed",left:0,top:0,bottom:0,backdropFilter:"blur(30px)",zIndex:100,overflowY:"auto",scrollbarWidth:"none",msOverflowStyle:"none"}}>
       <div onClick={()=>setPage("home")} style={{width:42,height:42,borderRadius:12,overflow:"hidden",marginBottom:18,cursor:"pointer",boxShadow:`0 10px 24px rgba(0,0,0,0.35)`,flexShrink:0,border:"1px solid rgba(175,200,240,0.16)",boxShadow:"0 18px 44px rgba(6,10,18,0.5), inset 0 1px 0 rgba(255,255,255,0.14)"}}>
         {content.brand.logoUrl
           ?<img src={content.brand.logoUrl} alt={content.brand.name} style={{width:"100%",height:"100%",objectFit:"cover"}}/>
@@ -3996,7 +4015,7 @@ export default function PodChat(){
     </div>
 
     {/* MAIN */}
-    <div style={{marginLeft:72,flex:1,display:"flex",flexDirection:"column",minHeight:"100vh"}}>
+    <div style={{marginLeft:__isMobile?0:72,flex:1,display:"flex",flexDirection:"column",minHeight:"100vh"}}>
       {/* TOPBAR */}
       <div style={{height:60,background:"rgba(16,18,22,.93)",borderBottom:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",padding:"0 22px",gap:14,backdropFilter:"blur(24px)",position:"sticky",top:0,zIndex:50}}>
         <div style={{flex:1,fontSize:12,fontWeight:700,color:T.t2,letterSpacing:2,textTransform:"uppercase"}}>{TITLES[page]||page}</div>
