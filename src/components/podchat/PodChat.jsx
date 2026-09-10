@@ -3904,6 +3904,13 @@ function WelcomeModal({brand,onSelect}){
 export default function PodChat(){
   const [content,setContent]=useState(loadContent);
   const [quickShow,setQuickShow]=useState(null);
+  // Register the service worker so PodChat can be installed and the
+  // shell still loads without a connection.
+  useEffect(()=>{
+    if(typeof window==="undefined") return;
+    if(!("serviceWorker" in navigator)) return;
+    navigator.serviceWorker.register("/sw.js").catch(()=>{});
+  },[]);
   const isMobile=useIsMobile();
   // Catalogue comes from the API so ids match the database.
   useEffect(()=>{
